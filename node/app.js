@@ -67,7 +67,41 @@ function validateCoffeeStatusFormData(coffeeStatusData) {
 
 //function that validates the constraints of the coffe order form data object
 //order data must contain valid name,strength,milk choice attributes
-function validateCoffeeFormData(coffeeData) {}
+function validateCoffeeFormData(coffeeData) {
+  console.log("Validating");
+  console.log(coffeeData);
+
+  let name;
+  let nameLen;
+  let milk;
+  let strength;
+
+  try {
+    //ensure that object has name, strength, milk properties
+    name = String(coffeeData.name);
+    name = sanitize(name);
+    nameLen = name.length;
+    strength = parseInt(coffeeData.strength);
+    milk = coffeeData.milk;
+  } catch (e) {
+    console.log("Invalid " + e);
+    throw new Error(ValidationError);
+  }
+
+  //ensure correct ranges of values
+  if (
+    nameLen >= minNameLength &&
+    nameLen <= maxNameLength &&
+    minStrength <= strength &&
+    strength <= maxStrength &&
+    (milk == nomilk || milk == cowmilk || milk == oatmilk)
+  ) {
+    let validOrderData = { name: name, strength: strength, milk: milk };
+    console.log("Validated: ");
+    console.log(validOrderData);
+    return validOrderData;
+  } else throw new Error(ValidationError);
+}
 
 /* "Database" emulated by maintained an in-memory array of coffeeOrder objects 
    Higher index means newer data record: */
@@ -95,7 +129,20 @@ function statusLookup(requestedOrder) {
 
 //Process the POST request that adds a new order to the DB
 //It is to return order back to the client.
-function processOrder(coffeeOrder) {}
+function processOrder(coffeeOrder) {
+  const order = {
+    ...coffeeOrder,
+    orderID,
+    orderTime: new Date(),
+    isReady: false,
+  };
+
+  orderID++;
+
+  coffeeOrdersDB.push(order);
+
+  return order;
+}
 
 /* *********************************************************************
    Setup HTTP route handling: Called when a HTTP request is received 
@@ -121,6 +168,12 @@ function processReq(req, res) {
                 return { validated: "ok" };
               })
               .then((validData) => jsonResponse(res, validData))
+              .catch((err) => reportError(res, err));
+            break;
+          case "order-coffee": // endpoint POST /test
+            extractJSON(req)
+              .then((data) => validateCoffeeFormData(data))
+              .then((validData) => jsonResponse(res, processOrder(validData)))
               .catch((err) => reportError(res, err));
             break;
           default:

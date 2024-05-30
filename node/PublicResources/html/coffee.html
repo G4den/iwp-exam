@@ -11,6 +11,35 @@
   <h1 id="id1"> IWP KABYS (KAffe-Bestillings-sYStem) </h1>
 
   <section>
+    <form id="coffeeOrderForm_id" action="order-coffee" method="get">
+      <!-- Action/Method is provided for clarity: This app doesn't use browsers form submission, but handled in JS-->
+      <fieldset>
+        <legend>Bestil kaffe</legend>
+        <div class="myFormLayout">
+          <!-- Hmm, fieldset seems not too happy to work with grid layout used for the form??-->
+          <label for="name_id"> Navn</label>
+          <input id="name_id" type="text" name="name_id" id="coffeeOrder_id" placeholder="john" minlength="1"
+            maxlength="30" />
+
+          <label for="coffeeStrength">Styrke</label>
+          <input type="range" name="strength" id="coffeeStrength" min="1" max="10" />
+
+          <label for="noMilkRadio_id">Ingen mælk</label>
+          <input id="noMilkRadio_id" type="radio" name="milk" value="nomilk" />
+
+          <label for="oatMilkRadio_id">Havre mælk</label>
+
+          <input id="oatMilkRadio_id" type="radio" name="milk" value="oatmilk" />
+
+          <label for="cowMilkRadio_id">Sød mælk</label>
+          <input id="cowMilkRadio_id" for="oatMilkRadio_id" type="radio" name="milk" value="cowmilk" />
+
+          <input for="" type="submit" id="submitOrderButton_id" value="Bestil" />
+        </div>
+      </fieldset>
+    </form>
+    <output id="result_id" style="visibility: hidden">Status </output>
+
     <form id="coffeeStatusForm_id" action="coffee-orders" method="get">
       <!-- Action/Method is provided for clarity: This app doesn't use browsers form submission, but handled in JS-->
       <fieldset>

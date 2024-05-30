@@ -46,6 +46,40 @@ jsonFetch("coffee-orders/117").then(status=>{
    sent to the server as part of a POST to insert a new record (alse sends updated record back) 
 */
 
+function extractOrderCoffeeFormData() {
+  let coffeeOrderData = {};
+
+  coffeeOrderData.name = document.getElementById("name_id").value;
+  coffeeOrderData.strength = document.getElementById("coffeeStrength").value;
+
+  let milk = "";
+  if (document.getElementById("noMilkRadio_id")) milk = "nomilk";
+  if (document.getElementById("oatMilkRadio_id")) milk = "oatmilk";
+  if (document.getElementById("cowMilkRadio_id")) milk = "cowmilk";
+
+  coffeeOrderData.milk = milk;
+
+  console.log(coffeeOrderData);
+
+  return coffeeOrderData;
+}
+
+function orderCoffee(event) {
+  event.preventDefault(); //we handle the interaction with the server rather than browsers form submission
+  //document.getElementById("submitOrderButton_id").disabled = true; //prevent double submission
+  let coffeeOrderFormData = extractOrderCoffeeFormData();
+  jsonPost("order-coffee", coffeeOrderFormData)
+    .then((coffeeStatus) => {
+      console.log("Status");
+      console.log(coffeeStatus);
+      let resultElem = document.getElementById("result_id");
+      resultElem.textContent = `Hi ${coffeeStatus.name}! Your order was received at ${coffeeStatus.orderTime}. Your order number is ${coffeeStatus.orderID}!`;
+      resultElem.style.visibility = "visible";
+      document.getElementById("submitOrderBtn_id").disabled = false;
+    })
+    .catch((err) => console.log(err));
+}
+
 function extractCoffeeStatusFormData() {
   let coffeeStatusData = {};
   coffeeStatusData.orderID = document.getElementById("coffeeOrder_id").value;
@@ -87,3 +121,7 @@ function requestCoffeeStatus(event) {
 document
   .getElementById("coffeeStatusForm_id")
   .addEventListener("submit", requestCoffeeStatus);
+
+document
+  .getElementById("coffeeOrderForm_id")
+  .addEventListener("submit", orderCoffee);
